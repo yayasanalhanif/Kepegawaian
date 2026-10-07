@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - Flipbook Kepegawaian</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f6f9; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        input[type="text"], input[type="file"], select, input[type="color"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { background: #27ae60; color: white; border: none; padding: 12px; cursor: pointer; width: 100%; font-size: 16px; border-radius: 4px; font-weight: bold; }
+        .btn:hover { background: #219150; }
+        #status { margin-top: 15px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="text-align: center; color: #2c3e50;">Pengaturan Flipbook</h2>
+        
+        <div class="form-group">
+            <label>Judul Header</label>
+            <input type="text" id="inputTitle" placeholder="Cth: Peraturan Kepegawaian">
+        </div>
+
+        <div class="form-group">
+            <label>Warna Latar Header</label>
+            <input type="color" id="inputColor" value="#2c3e50" style="height: 40px; padding: 0;">
+        </div>
+
+        <div class="form-group">
+            <label>Tampilkan Tombol Navigasi?</label>
+            <select id="inputNav">
+                <option value="true">Ya, Tampilkan (Next/Prev)</option>
+                <option value="false">Sembunyikan</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Upload File PDF Panduan</label>
+            <input type="file" id="inputFile" accept="application/pdf">
+            <small style="color: #666;">(Kosongkan jika hanya ingin mengubah judul/warna)</small>
+        </div>
+
+        <button class="btn" onclick="simpanPengaturan()">Simpan Pengaturan</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // GANTI DENGAN URL WEB APP BARU ANDA
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz_tvEnookTdKsMrup4Zm7TO47xr_xoE08SQnIIQujDy59WmAFpRQZvW6KNMz63eUmN/exec"; 
+
+        async function simpanPengaturan() {
+            const status = document.getElementById('status');
+            const fileInput = document.getElementById('inputFile').files[0];
+            
+            status.style.color = "orange";
+            status.innerText = "Memproses pembaruan... mohon tunggu.";
+
+            let payload = {
+                title: document.getElementById('inputTitle').value,
+                bgColor: document.getElementById('inputColor').value,
+                navButtons: document.getElementById('inputNav').value,
+                pdfBase64: null
+            };
+
+            // Jika ada file PDF yang dipilih, konversi ke Base64
+            if (fileInput) {
+                const reader = new FileReader();
+                reader.readAsDataURL(fileInput);
+                reader.onload = async function () {
+                    payload.pdfBase64 = reader.result.split(',')[1];
+                    kirimData(payload);
+                };
+            } else {
+                kirimData(payload); // Kirim tanpa mengubah PDF
+            }
+        }
+
+        async function kirimData(payload) {
+            const status = document.getElementById('status');
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    status.style.color = "green";
+                    status.innerText = "Berhasil! Buka aplikasi flipbook untuk melihat hasil.";
+                } else {
+                    status.style.color = "red";
+                    status.innerText = "Gagal: " + result.message;
+                }
+            } catch (error) {
+                status.style.color = "red";
+                status.innerText = "Error jaringan: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
