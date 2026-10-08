@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#333333">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
     <title>Peraturan Kepegawaian Al Hanif</title>
     <style>
         body { background-color: #e5e5e5; display: flex; flex-direction: column; align-items: center; height: 100vh; margin: 0; }
@@ -112,6 +115,19 @@
         }
 
         document.addEventListener('DOMContentLoaded', muatAplikasi);
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+              console.log('ServiceWorker berhasil didaftarkan dengan scope:', registration.scope);
+            })
+            .catch(error => {
+              console.log('Pendaftaran ServiceWorker gagal:', error);
+            });
+        });
+      }
     </script>
 </body>
 </html>
