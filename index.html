@@ -101,7 +101,13 @@
                 const pageFlip = new St.PageFlip(container, {
                     width: 350, height: 496, size: "stretch",
                     minWidth: 315, maxWidth: 1000, minHeight: 420, maxHeight: 1350,
-                    showCover: false, useMouseEvents: true
+                    showCover: false, useMouseEvents: true,
+                    // Tambahan untuk mengoptimalkan efek di HP
+                  usePortrait: true,       // Memastikan mode 1 halaman aktif di layar sempit
+                  drawShadow: true,        // Wajib aktif agar ada efek bayangan kertas
+                  maxShadowOpacity: 0.8,   // Gelapkan bayangan (default 0.5) agar efek kertas "jatuh menimpa" lebih realistis
+                  flippingTime: 1200,      // Perlambat animasi (default 1000) agar jatuhnya kertas lebih terlihat
+                  swipeDistance: 30        // Lebih sensitif untuk usapan jari di HP
                 });
                 pageFlip.loadFromHTML(document.querySelectorAll('.page'));
 
